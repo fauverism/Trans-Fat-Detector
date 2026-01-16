@@ -106,8 +106,18 @@ export default function Home() {
           <p className="text-sm">
             Made with ❤️ to help you make healthier choices
           </p>
-          <p className="text-xs mt-2 text-gray-500">
-            Trans fats can increase bad cholesterol and lower good cholesterol
+          <p className="text-xs mt-4 text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Consumption of trans fats is associated with increased risk for cardiovascular diseases. Artificial trans fats are highly regulated or banned in many countries. However, they are still widely consumed in developing nations where they are associated with increased risk of diabetes, cardiovascular diseases, and death.
+          </p>
+          <p className="text-sm mt-3">
+            <a
+              href="https://en.wikipedia.org/wiki/Trans_fat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-orange-600 hover:text-orange-700 underline font-medium"
+            >
+              Learn more about Trans Fats and why they&apos;re not awesome
+            </a>
           </p>
         </motion.footer>
       </main>
