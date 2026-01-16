@@ -32,7 +32,7 @@ export default function Home() {
           className="text-center mb-12"
         >
           <motion.h1
-            className="text-6xl md:text-7xl font-black mb-4 bg-gradient-to-r from-orange-600 via-red-500 to-pink-600 bg-clip-text text-transparent"
+            className="text-6xl md:text-7xl font-black mb-4 bg-gradient-to-r from-orange-600 via-red-500 to-pink-600 bg-clip-text text-transparent font-[family-name:var(--font-bagel-fat-one)]"
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5 }}
