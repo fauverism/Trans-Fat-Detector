@@ -20,36 +20,47 @@ export default function TextSearchTab({ setResult }: Props) {
 
     setIsSearching(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    try {
+      const response = await fetch('/api/analyze-product', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productText: searchTerm }),
+      });
 
-    // Mock data - in production, this would call an API
-    const mockResult: TransFatResult = {
-      productName: searchTerm,
-      hasTransFat: Math.random() > 0.5,
-      transFatTypes: [
-        'Partially Hydrogenated Oils',
-        'Shortening',
-        'Margarine'
-      ].slice(0, Math.floor(Math.random() * 3) + 1),
-      totalTransFat: `${(Math.random() * 2).toFixed(1)}g`,
-      ingredients: [
-        'Enriched Flour',
-        'Sugar',
-        'Partially Hydrogenated Soybean Oil',
-        'High Fructose Corn Syrup',
-        'Salt',
-        'Artificial Flavors'
-      ],
-      warnings: [
-        'Contains partially hydrogenated oils',
-        'May increase LDL cholesterol',
-        'Recommended to limit consumption'
-      ]
-    };
+      if (!response.ok) {
+        throw new Error('Failed to analyze product');
+      }
 
-    setResult(mockResult);
-    setIsSearching(false);
+      const analysis = await response.json();
+
+      // Transform AI analysis to TransFatResult format
+      const result: TransFatResult = {
+        productName: searchTerm,
+        hasTransFat: analysis.hasTransFat,
+        transFatTypes: analysis.ingredients || [],
+        totalTransFat: analysis.hasTransFat ? 'Present' : '0g',
+        ingredients: analysis.ingredients || [],
+        warnings: analysis.reasons || [],
+      };
+
+      setResult(result);
+    } catch (error) {
+      console.error('Error analyzing product:', error);
+      // Show error result
+      const errorResult: TransFatResult = {
+        productName: searchTerm,
+        hasTransFat: false,
+        transFatTypes: [],
+        totalTransFat: 'Unknown',
+        ingredients: [],
+        warnings: ['Unable to analyze product. Please try again.'],
+      };
+      setResult(errorResult);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   return (
@@ -64,14 +75,14 @@ export default function TextSearchTab({ setResult }: Props) {
           Search by Name
         </h2>
         <p className="text-gray-600">
-          Type in a food brand or product name
+          Type a product name or paste an ingredient list
         </p>
       </div>
 
       <div className="flex gap-3">
         <Input
           type="text"
-          placeholder="Try 'Oreos' or 'Doritos'..."
+          placeholder="e.g., 'Oreos' or paste ingredients..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -97,7 +108,7 @@ export default function TextSearchTab({ setResult }: Props) {
 
       <div className="bg-orange-50 rounded-lg p-4 border-2 border-orange-100">
         <p className="text-sm text-gray-700 text-center">
-          💡 <strong>Tip:</strong> Try searching for popular snack brands or packaged foods
+          💡 <strong>Tip:</strong> Try product names like &quot;Oreos&quot; or paste ingredient lists for AI analysis
         </p>
       </div>
     </motion.div>
