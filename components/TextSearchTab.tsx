@@ -30,7 +30,10 @@ export default function TextSearchTab({ setResult }: Props) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to analyze product');
+        const errorBody = await response.json().catch(() => null);
+        const errorMessage =
+          errorBody?.error || 'Failed to analyze product';
+        throw new Error(errorMessage);
       }
 
       const analysis = await response.json();
@@ -47,6 +50,8 @@ export default function TextSearchTab({ setResult }: Props) {
 
       setResult(result);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to analyze product';
       console.error('Error analyzing product:', error);
       // Show error result
       const errorResult: TransFatResult = {
@@ -55,7 +60,7 @@ export default function TextSearchTab({ setResult }: Props) {
         transFatTypes: [],
         totalTransFat: 'Unknown',
         ingredients: [],
-        warnings: ['Unable to analyze product. Please try again.'],
+        warnings: [errorMessage],
       };
       setResult(errorResult);
     } finally {

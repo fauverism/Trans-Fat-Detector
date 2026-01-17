@@ -1,12 +1,20 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { NextRequest, NextResponse } from 'next/server';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const anthropicApiKey = process.env.ANTHROPIC_API_KEY;
+const anthropic = anthropicApiKey
+  ? new Anthropic({ apiKey: anthropicApiKey })
+  : null;
 
 export async function POST(request: NextRequest) {
   try {
+    if (!anthropic) {
+      return NextResponse.json(
+        { error: 'Missing ANTHROPIC_API_KEY' },
+        { status: 500 }
+      );
+    }
+
     const { productText } = await request.json();
 
     if (!productText || typeof productText !== 'string') {
@@ -52,12 +60,21 @@ Respond ONLY with valid JSON, no additional text.`
       ]
     });
 
-    const responseText = message.content[0].type === 'text'
-      ? message.content[0].text
-      : '';
+    const responseText = message.content
+      .map((block) => (block.type === 'text' ? block.text : ''))
+      .join('')
+      .trim();
 
-    // Parse the JSON response from Claude
-    const analysis = JSON.parse(responseText);
+    let analysis: unknown;
+    try {
+      analysis = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Invalid JSON from Claude:', responseText);
+      return NextResponse.json(
+        { error: 'Invalid response from AI model' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(analysis);
   } catch (error) {
