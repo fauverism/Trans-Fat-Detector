@@ -11,19 +11,26 @@ interface Props {
 }
 
 export default function ResultsDisplay({ result }: Props) {
-  const statusColor = result.hasTransFat
-    ? 'from-red-500 to-pink-600'
-    : 'from-green-500 to-emerald-600';
+  const isError = Boolean(result.isError);
+  const statusColor = isError
+    ? 'from-orange-500 to-amber-600'
+    : result.hasTransFat
+      ? 'from-red-500 to-pink-600'
+      : 'from-green-500 to-emerald-600';
 
-  const statusIcon = result.hasTransFat ? (
+  const statusIcon = isError ? (
+    <AlertTriangle className="w-12 h-12" />
+  ) : result.hasTransFat ? (
     <AlertTriangle className="w-12 h-12" />
   ) : (
     <CheckCircle className="w-12 h-12" />
   );
 
-  const statusMessage = result.hasTransFat
-    ? '⚠️ Trans Fats Detected!'
-    : '✓ No Trans Fats Found!';
+  const statusMessage = isError
+    ? 'Unable to analyze product'
+    : result.hasTransFat
+      ? '⚠️ Trans Fats Detected!'
+      : '✓ No Trans Fats Found!';
 
   return (
     <motion.div

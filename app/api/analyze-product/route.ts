@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     const message = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-3-5-sonnet-latest',
       max_tokens: 1024,
       messages: [
         {
@@ -78,9 +78,11 @@ Respond ONLY with valid JSON, no additional text.`
 
     return NextResponse.json(analysis);
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     console.error('Error analyzing product:', error);
     return NextResponse.json(
-      { error: 'Failed to analyze product' },
+      { error: 'Failed to analyze product', details: errorMessage },
       { status: 500 }
     );
   }

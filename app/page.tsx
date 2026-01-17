@@ -17,6 +17,7 @@ export interface TransFatResult {
   totalTransFat: string;
   ingredients: string[];
   warnings: string[];
+  isError?: boolean;
 }
 
 export default function Home() {
@@ -118,6 +119,9 @@ export default function Home() {
             >
               Learn more about Trans Fats and why they&apos;re not awesome
             </a>
+          </p>
+          <p className="text-xs mt-3">
+            Version 0.1.2 - Powered by Anthropic
           </p>
         </motion.footer>
       </main>

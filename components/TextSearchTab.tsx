@@ -31,8 +31,12 @@ export default function TextSearchTab({ setResult }: Props) {
 
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
+        const errorText = await response.text().catch(() => '');
         const errorMessage =
-          errorBody?.error || 'Failed to analyze product';
+          errorBody?.details ||
+          errorBody?.error ||
+          errorText ||
+          `Request failed (${response.status})`;
         throw new Error(errorMessage);
       }
 
@@ -61,6 +65,7 @@ export default function TextSearchTab({ setResult }: Props) {
         totalTransFat: 'Unknown',
         ingredients: [],
         warnings: [errorMessage],
+        isError: true,
       };
       setResult(errorResult);
     } finally {
